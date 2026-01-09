@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { 
-  User, BookOpen, Users, Video,DollarSign, Star
+import {
+  User, BookOpen, Users, Video, DollarSign, Star, LogOut,
+  Settings, BarChart3, ChevronRight
 } from 'lucide-react';
 import Footer from "../components/Footer";
 import type { Page } from '../types';
@@ -46,16 +47,16 @@ export default function InstructorDashboard({ onNavigate }: Props) {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   const [courses, setCourses] = useState<Course[]>([
-    { 
-      id: 1, 
-      title: 'Introduction to Computer Technology', 
-      category: 'Computer Science', 
+    {
+      id: 1,
+      title: 'Introduction to Computer Technology',
+      category: 'Computer Science',
       students: 0,
       lectures: 0,
-      rating: 5.0, 
-      revenue: 0, 
-      status: 'published', 
-      lastUpdated: new Date().toLocaleDateString() 
+      rating: 5.0,
+      revenue: 0,
+      status: 'published',
+      lastUpdated: new Date().toLocaleDateString()
     }
   ]);
 
@@ -90,10 +91,10 @@ export default function InstructorDashboard({ onNavigate }: Props) {
     const updateCourseStats = () => {
       const lecturesData = localStorage.getItem('courseLectures');
       const studentsData = localStorage.getItem('enrolledStudents');
-      
+
       const lectureCount = lecturesData ? JSON.parse(lecturesData).length : 0;
       const studentCount = studentsData ? JSON.parse(studentsData).length : 0;
-      
+
       setCourses(prevCourses => prevCourses.map(course => ({
         ...course,
         lectures: lectureCount,
@@ -115,11 +116,23 @@ export default function InstructorDashboard({ onNavigate }: Props) {
   const totalLectures = courses.reduce((sum, course) => sum + course.lectures, 0);
   const totalRevenue = courses.reduce((sum, course) => sum + course.revenue, 0);
 
+  const menuItems = [
+    { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'courses', label: 'Courses', icon: BookOpen },
+    { id: 'lectures', label: 'Lectures', icon: Video },
+    { id: 'students', label: 'Students', icon: Users },
+  ];
+
   const renderContent = () => {
     switch (activeTab) {
       case 'overview':
         return (
           <div className="space-y-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
+              <p className="text-gray-600">Welcome back, {user?.name || 'Instructor'}! Here's what's happening with your courses.</p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between">
@@ -186,7 +199,7 @@ export default function InstructorDashboard({ onNavigate }: Props) {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">My Courses</h2>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {courses.map((course) => (
                   <div key={course.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition">
@@ -196,10 +209,10 @@ export default function InstructorDashboard({ onNavigate }: Props) {
                       </span>
                       <span className="text-sm text-gray-500">{course.lastUpdated}</span>
                     </div>
-                    
+
                     <h3 className="text-lg font-bold mb-2">{course.title}</h3>
                     <p className="text-gray-600 text-sm mb-4">{course.category}</p>
-                    
+
                     <div className="space-y-3 mb-6">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Students</span>
@@ -217,8 +230,8 @@ export default function InstructorDashboard({ onNavigate }: Props) {
                         </span>
                       </div>
                     </div>
-                    
-                    <button 
+
+                    <button
                       onClick={() => onNavigate('courseManagement')}
                       className="w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 text-sm"
                     >
@@ -258,7 +271,7 @@ export default function InstructorDashboard({ onNavigate }: Props) {
                     ))}
                   </div>
                 )}
-                <button 
+                <button
                   onClick={() => onNavigate('courseManagement')}
                   className="w-full mt-4 py-2 border border-teal-600 text-teal-600 rounded-lg hover:bg-teal-50"
                 >
@@ -289,8 +302,8 @@ export default function InstructorDashboard({ onNavigate }: Props) {
                         <div className="text-right">
                           <div className="flex items-center space-x-2">
                             <div className="w-16 bg-gray-200 rounded-full h-2">
-                              <div 
-                                className="bg-green-600 h-2 rounded-full" 
+                              <div
+                                className="bg-green-600 h-2 rounded-full"
                                 style={{ width: `${student.progress}%` }}
                               ></div>
                             </div>
@@ -302,7 +315,7 @@ export default function InstructorDashboard({ onNavigate }: Props) {
                     ))}
                   </div>
                 )}
-                <button 
+                <button
                   onClick={() => setActiveTab('students')}
                   className="w-full mt-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50"
                 >
@@ -316,7 +329,10 @@ export default function InstructorDashboard({ onNavigate }: Props) {
       case 'courses':
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Course Management</h2>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Course Management</h1>
+              <p className="text-gray-600">Manage and monitor all your courses</p>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {courses.map((course) => (
                 <div key={course.id} className="bg-white rounded-xl shadow-lg p-6">
@@ -329,7 +345,7 @@ export default function InstructorDashboard({ onNavigate }: Props) {
                       {course.status}
                     </span>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div>
                       <p className="text-sm text-gray-500">Students</p>
@@ -351,8 +367,8 @@ export default function InstructorDashboard({ onNavigate }: Props) {
                       <p className="text-lg font-bold text-green-600">${course.revenue}</p>
                     </div>
                   </div>
-                  
-                  <button 
+
+                  <button
                     onClick={() => onNavigate('courseManagement')}
                     className="w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
                   >
@@ -368,8 +384,11 @@ export default function InstructorDashboard({ onNavigate }: Props) {
         return (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Lecture Management</h2>
-              <button 
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Lecture Management</h1>
+                <p className="text-gray-600">View and manage all your course lectures</p>
+              </div>
+              <button
                 onClick={() => onNavigate('courseManagement')}
                 className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
               >
@@ -382,7 +401,7 @@ export default function InstructorDashboard({ onNavigate }: Props) {
                 <div className="text-center py-12">
                   <Video className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-500 mb-4">No lectures uploaded yet</p>
-                  <button 
+                  <button
                     onClick={() => onNavigate('courseManagement')}
                     className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
                   >
@@ -415,7 +434,10 @@ export default function InstructorDashboard({ onNavigate }: Props) {
       case 'students':
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Student Management</h2>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Student Management</h1>
+              <p className="text-gray-600">Track student progress and performance</p>
+            </div>
             <div className="bg-white rounded-xl shadow-lg p-6">
               {students.length === 0 ? (
                 <div className="text-center py-12">
@@ -438,8 +460,8 @@ export default function InstructorDashboard({ onNavigate }: Props) {
                       <div className="text-right">
                         <div className="flex items-center space-x-2 mb-1">
                           <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div 
-                              className="bg-green-600 h-2 rounded-full" 
+                            <div
+                              className="bg-green-600 h-2 rounded-full"
                               style={{ width: `${student.progress}%` }}
                             ></div>
                           </div>
@@ -461,74 +483,64 @@ export default function InstructorDashboard({ onNavigate }: Props) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      <header className="sticky top-0 z-50 bg-gradient-to-r from-teal-700 to-blue-700 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Top Navbar */}
+      <header className="sticky top-0 z-50 bg-white shadow-md">
+        <div className="px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                <User className="w-6 h-6" />
+            {/* Logo */}
+            <div
+              className="flex items-center space-x-3 cursor-pointer"
+              onClick={() => onNavigate('landing')}
+            >
+              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                <span className="text-2xl font-bold text-white">L</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Instructor Dashboard</h1>
-                <p className="text-sm text-teal-200">Welcome, {user?.name || 'Instructor'}!</p>
+                <span className="text-2xl font-bold text-gray-900">LearnHub</span>
+                <p className="text-xs text-gray-500 -mt-1">Instructor Portal</p>
               </div>
             </div>
 
-            <div className="hidden md:flex items-center space-x-6">
-              <button
-                onClick={() => setActiveTab('overview')}
-                className={`px-4 py-2 rounded-lg ${activeTab === 'overview' ? 'bg-white/30' : 'hover:bg-white/10'}`}
-              >
-                Overview
-              </button>
-              <button
-                onClick={() => setActiveTab('courses')}
-                className={`px-4 py-2 rounded-lg ${activeTab === 'courses' ? 'bg-white/30' : 'hover:bg-white/10'}`}
-              >
-                Courses
-              </button>
-              <button
-                onClick={() => setActiveTab('lectures')}
-                className={`px-4 py-2 rounded-lg ${activeTab === 'lectures' ? 'bg-white/30' : 'hover:bg-white/10'}`}
-              >
-                Lectures
-              </button>
-              <button
-                onClick={() => setActiveTab('students')}
-                className={`px-4 py-2 rounded-lg ${activeTab === 'students' ? 'bg-white/30' : 'hover:bg-white/10'}`}
-              >
-                Students
-              </button>
-            </div>
-
+            {/* Profile Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                className="flex items-center space-x-2 p-2 hover:bg-white/10 rounded-lg"
+                className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg transition"
               >
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6" />
+                <div className="text-right hidden md:block">
+                  <p className="text-sm font-semibold text-gray-800">{user?.name || 'Instructor'}</p>
+                  <p className="text-xs text-gray-500">Instructor</p>
+                </div>
+                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                  <User className="w-6 h-6 text-teal-600" />
                 </div>
               </button>
-              
+
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border z-50">
                   <div className="p-4 border-b">
                     <p className="font-semibold text-gray-800">{user?.name}</p>
                     <p className="text-sm text-gray-600">{user?.email}</p>
+                    <span className="inline-block mt-2 px-3 py-1 bg-teal-100 text-teal-800 text-xs rounded-full">
+                      Instructor
+                    </span>
                   </div>
                   <div className="py-2">
-                    <button className="w-full text-left px-4 py-3 hover:bg-gray-50 text-gray-700">
+                    <button className="w-full text-left px-4 py-3 hover:bg-gray-50 text-gray-700 flex items-center">
+                      <User className="w-4 h-4 mr-3" />
                       My Profile
                     </button>
-                    <button className="w-full text-left px-4 py-3 hover:bg-gray-50 text-gray-700">
+                    <button className="w-full text-left px-4 py-3 hover:bg-gray-50 text-gray-700 flex items-center">
+                      <Settings className="w-4 h-4 mr-3" />
                       Settings
                     </button>
-                    <button 
+                    <div className="border-t my-2"></div>
+                    <button
                       onClick={logout}
-                      className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50"
+                      className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 flex items-center"
                     >
+                      <LogOut className="w-4 h-4 mr-3" />
                       Logout
                     </button>
                   </div>
@@ -539,11 +551,42 @@ export default function InstructorDashboard({ onNavigate }: Props) {
         </div>
       </header>
 
-      <main className="flex-1">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          {renderContent()}
-        </div>
-      </main>
+      {/* Main Layout with Sidebar */}
+      <div className="flex flex-1">
+        {/* Left Sidebar */}
+        <aside className="w-64 bg-white shadow-lg flex-shrink-0">
+          <nav className="p-4 space-y-2">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
+                    isActive
+                      ? 'bg-teal-600 text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </div>
+                  {isActive && <ChevronRight className="w-5 h-5" />}
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto">
+          <div className="p-8">
+            {renderContent()}
+          </div>
+        </main>
+      </div>
 
       <Footer onNavigate={onNavigate} />
     </div>
